@@ -7,3 +7,4 @@ pytest
 Pillow
 joblib
 pytest-cov
+gunicorn

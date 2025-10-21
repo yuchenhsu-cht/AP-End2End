@@ -1,0 +1,9 @@
+fastapi
+uvicorn[standard]
+scikit-learn
+numpy
+python-multipart
+pytest
+Pillow
+joblib
+pytest-cov

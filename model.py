@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 import joblib
 from sklearn.datasets import fetch_openml
-from sklearn.linear_model import SGDClassifier
+from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split
 import os
 
@@ -11,11 +11,9 @@ MODEL_FILE = "mnist_model.joblib"
 
 def train_and_save_model():
     """
-    Fetches MNIST data, trains an SGD classifier, and saves it to a file.
-    This function is intended to be run once to generate the model file.
+    Fetches MNIST data, trains an MLPClassifier (neural network), and saves it.
     """
     print("Fetching MNIST dataset...")
-    # Use parser='liac-arff' for the new fetch_openml behavior
     mnist = fetch_openml('mnist_784', version=1, as_frame=False, parser='liac-arff')
     
     X = mnist.data
@@ -29,16 +27,22 @@ def train_and_save_model():
         X, y, test_size=0.2, random_state=42
     )
     
-    print("Training SGDClassifier...")
-    # Using log_loss to get probability estimates
-    clf = SGDClassifier(loss='log_loss', random_state=42)
+    print("Training MLPClassifier (Neural Network). This may take a few minutes...")
+    # This is a simple neural network. For this dataset, it provides better accuracy.
+    clf = MLPClassifier(
+        hidden_layer_sizes=(100, 50), 
+        max_iter=30, 
+        random_state=42,
+        verbose=True, # To see the training progress
+        early_stopping=True # Stop training when validation score is not improving
+    )
     clf.fit(X_train, y_train)
     
     print(f"Calculating accuracy...")
     accuracy = clf.score(X_test, y_test)
-    print(f"Model accuracy: {accuracy:.4f}")
+    print(f"New Model accuracy: {accuracy:.4f}")
     
-    print(f"Saving model to {MODEL_FILE}...")
+    print(f"Saving new model to {MODEL_FILE}...")
     joblib.dump(clf, MODEL_FILE)
     print("Model saved.")
 

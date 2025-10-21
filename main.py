@@ -1,8 +1,10 @@
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, JSONResponse
 import model
 import io
+import os
 
 # Create the FastAPI app
 app = FastAPI(
@@ -11,15 +13,20 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Mount the static directory to serve UI files
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
+
 # Load the ML model at startup
 ml_model = model.load_model()
 
-@app.get("/", tags=["General"], summary="Health check endpoint")
+@app.get("/", tags=["UI"], summary="Serve the user interface")
 def read_root():
     """
-    A simple health check endpoint to confirm the service is running.
+    Serves the main HTML page for the user interface.
     """
-    return {"message": "Welcome to the MNIST Digit Recognition API!"}
+    return FileResponse(os.path.join(static_dir, "index.html"))
 
 @app.post("/predict/mnist", tags=["Prediction"], summary="Predict a digit from an image")
 def predict_mnist(file: UploadFile = File(...) ):

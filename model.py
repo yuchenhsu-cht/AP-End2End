@@ -18,6 +18,8 @@ def train_and_save_model():
     
     X = mnist.data
     y = mnist.target
+    # Convert string labels to integers for MLPClassifier
+    y = y.astype(np.uint8)
     
     # Normalize the data
     X = X / 255.0
